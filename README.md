@@ -3,7 +3,7 @@
 This is a python script that investigates mathematical functions.
 
 * Ascending and descending intervals
-* Intersection with Y and X axis
+* Intersections with Y and X axis
 * Positive and negative intervals
 * Domain
 * Extermums
@@ -18,7 +18,7 @@ This is a python script that investigates mathematical functions.
             f'(x): -3*x**2/((x - 4)*(3*x - 6)**2) - x**2/((x - 4)**2*(3*x - 6)) + 2*x/((x - 4)*(3*x - 6))
             Domain: [Union(Interval.open(-oo, 2), Interval.open(2, 4), Interval.open(4, oo))]
             Intersection with Y axis : (0, 0)
-            Intersection with X axis : [(0, 0)]
+            Intersections with X axis : [(0, 0)]
             Extremums : [('min', (0, 0)), ('max', (8/3, -8/3))]
             Vertical asymptote : [2, 4]
             Horizontal asymptote : ['-X -> 1/3', 'X -> 1/3']
