@@ -14,9 +14,9 @@ This is a python script that investigates mathematical functions.
 ```
      input: (x**2)/(3(x-2)(x-4))
      
-    output: f(x) :x**2/((x - 4)*(3*x - 6))
-            f'(x): -3*x**2/((x - 4)*(3*x - 6)**2) - x**2/((x - 4)**2*(3*x - 6)) + 2*x/((x - 4)*(3*x - 6))
-            Domain: [Union(Interval.open(-oo, 2), Interval.open(2, 4), Interval.open(4, oo))]
+    output: f(x) : x**2/((x - 4)*(3*x - 6))
+            f'(x) : -3*x**2/((x - 4)*(3*x - 6)**2) - x**2/((x - 4)**2*(3*x - 6)) + 2*x/((x - 4)*(3*x - 6))
+            Domain : [Union(Interval.open(-oo, 2), Interval.open(2, 4), Interval.open(4, oo))]
             Intersection with Y axis : (0, 0)
             Intersections with X axis : [(0, 0)]
             Extremums : [('min', (0, 0)), ('max', (8/3, -8/3))]
