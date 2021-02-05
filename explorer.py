@@ -1,16 +1,15 @@
-from sympy import symbols, S, diff, limit, oo, solve, re, I, Union, Interval, nan, EmptySet
+from sympy import symbols, S, diff, limit, oo, solve, re, I, Union, Interval, nan, EmptySet, sqrt, Reals, zoo
 from sympy.calculus.util import continuous_domain
 from sympy.plotting import plot
 from sympy.calculus.singularities import singularities
 from sympy.parsing.sympy_parser import parse_expr
-import sympy
 from functools import reduce
 
 x = symbols('x')
 
-class explorer:
+class Explorer:
     def __init__(self, function):  
-        self.function = explorer.get_sym(function)
+        self.function = Explorer.get_sym(function)
         self.derivative = self.function.diff(x)
         self.derived_second = self.derivative.diff(x)
         self.domain = [continuous_domain(self.function, x, S.Reals)]
@@ -62,20 +61,36 @@ class explorer:
             elif self.derivative.diff(x).subs(x, suspect) > 0:
                 self.extremums.append(('min', (suspect, self.function.subs(x, suspect))))
 
+    u = u'\u22c2'
+    n = u'\u22c3'
     def marking_concavities(self, concavite):
         if concavite == 'u':
-            return u'\u22c3'
-        return u'\u22c2'
+            return Explorer.u
+        return Explorer.n
+
+    def between(self, num0, num1):
+        center = (num0 + num1) / 2
+        if center == oo:
+            return min(num0, num1) + 1
+        elif center == -oo:
+            return max(num0, num1) - 1
+        elif center == nan: # num0 == -oo and num1 == oo
+            return 0
+        return center
 
     def get_inflection_point(self):
         list_of_concavites = []
         inflection_points = self.remove_simulated_number(solve(self.derived_second, x)) 
-        x_points = sorted([-oo, oo] + inflection_points)
+        if not inflection_points:
+            self.inflection_points = []
+            return
+        x_points = sorted([-oo, oo] + inflection_points )
         for i in range(len(x_points)-1):
             average_ = self.between(x_points[i], x_points[i+1])
-            if self.derived_second.subs(x, average_) > 0:
+            derived2 = self.derived_second.subs(x, average_)
+            if derived2 > 0:
                 list_of_concavites.append('u')
-            elif self.derived_second.subs(x, average_) < 0:
+            elif derived2 < 0:
                 list_of_concavites.append('n')
         for number, inflection_point in enumerate(inflection_points):
             if list_of_concavites[number] != list_of_concavites[number+1]:
@@ -94,14 +109,6 @@ class explorer:
         if limit(self.function, x, oo)  not in [-oo, oo]:
             self.horizontal_asymptotes.append('X -> ' + str(limit(self.function, x, oo)))  
 
-    def between(self, u, v):
-        center = (u+v)/2
-        if center == oo:
-            return min(u, v) + 1
-        elif center == -oo:
-            return max(u, v) - 1
-        return center
-
     def unify(self, intervals):
         if not intervals:
             return EmptySet
@@ -119,7 +126,9 @@ class explorer:
                 elif theorem < 0:
                     return (EmptySet, 'Permanent negative')
                 elif theorem == 0:
-                    return ('Permanent ziro', 'Permanent ziro')
+                    return ('Permanent zero', 'Permanent zero')
+            if re(theorem) != theorem:
+                continue
             if theorem > 0:
                 list_of_positivity.append(Interval(self.list_of_changes[i], self.list_of_changes[i+1]))
             elif theorem < 0:
@@ -133,14 +142,20 @@ class explorer:
             small, large = self.list_of_changes[i], self.list_of_changes[i+1]    
             center = self.between(small, large)  
             theorem = self.derivative.subs(x, center)
+            if re(theorem) != theorem:
+                continue
             if theorem > 0:
                 list_of_increases.append(Interval(small, large))
             elif theorem < 0:
                 list_of_decreases.append(Interval(small, large))
         self.place_ud_ += [self.unify(list_of_increases), self.unify(list_of_decreases)]
 
-    def complementary(self):
-        complements = [self.function,
+    def show_exploration (self):
+        inflections = []
+        for single_inflection in  self.inflection_points:
+            inflections.append((single_inflection[0],[float(a.n()) for a in single_inflection[1]], single_inflection[2]))
+
+        parameters = [self.function,
             self.derivative,
             self.domain,
             self.y_point_of_intersection,
@@ -153,18 +168,20 @@ class explorer:
             self.place_pn_[1],
             self.place_ud_[0],
             self.place_ud_[1]]
-        for num, one in enumerate(complements):
-            if one == []:
-                complements[num] = None
-        return complements
+        for num, parameter in enumerate(parameters):
+            if parameter == []:
+                parameters[num] = None
+            elif parameter == Interval(-oo, oo):
+                parameters[num] = Reals
+        return parameters
 
     def __repr__(self):
         return """
-            f(x) :{}
-            f'(x): {}
-            Domain: {}
+            f(x) : {}
+            f'(x) : {}
+            Domain : {}
             Intersection with Y axis : {}
-            Intersection with X axis : {}
+            Intersections with X axis : {}
             Extremums : {}
             Vertical asymptote : {}
             Horizontal asymptote : {}
@@ -172,11 +189,12 @@ class explorer:
             Positive intrvals : {}
             Negative intrvals : {}
             Ascending intervals : {}
-            Descending intervals : {}
-            """.format(*self.complementary()) 
+            Discending intervals : {}
+            """.format(*self.show_exploration()) 
 
  
-function = '(x**2)/(3(x-2)(x-4))'
-
-print(explorer(function))
-plot(explorer.get_sym(function))
+# function = 'sqrt(x)'
+# a = Explorer(function)
+# print(a.show_exploration())
+# print(a)
+# plot(Explorer.get_sym(function))
